@@ -5,10 +5,10 @@
 | | |
 |---|---|
 | **Store** | living-papers |
-| **Version** | v2 |
-| **Last updated** | 2026-07-12 |
+| **Version** | v3 |
+| **Last updated** | 2026-07-14 |
 | **Branch** | `main` |
-| **Revision note** | Added a fourth store, living-papers, for public work that stays open to outside contribution without being frozen at a version of record; extended the architecture, setup guide, and metadata conventions accordingly; added governance, citation-verification, credential-hygiene, and concurrent-editing practices; wrote the abstract; and published this document itself from research-workbench to living-papers as the worked example. |
+| **Revision note** | Corrected the setup guide to fetch this paper from its live living-papers raw URL (it had moved out of research-workbench). Broadened literature-vault to cover acquired datasets, not only reference prose. Added two workflow subsections: organizing a larger effort as a multi-document research program around a foundational paper, with its dependents, analysis code, and findings register (§5.5); and tuning the tool-chain to GitHub/AI/shell idiosyncrasies — chiefly GitHub's stricter math renderer — captured as reusable AI instructions (§5.8). Reconciled the figure-hosting description with the link-to-CDN convention, and softened the claim that GitHub rendering is effortless. |
 
 ---
 
@@ -36,11 +36,11 @@ The remainder of the paper develops those four stores: their rationale (§2), th
 
 ## 2. System Overview
 
-Delivering the single experience described above begins with an observation about the content itself. A single researcher accumulates several kinds of Markdown content with different audiences: private drafts, other people's papers kept only for reference, finished work meant for the world, and public work still evolving in the open. Conflating them creates risk — restricted material can be exposed, or private drafts burdened with public-facing infrastructure they don't need. The workflow addresses this by organizing all research content into four stores, each matching a distinct access and dissemination requirement:
+Delivering the single experience described above begins with an observation about the content itself. A single researcher accumulates several kinds of Markdown content with different audiences: private drafts, other people's papers and datasets kept only for reference, finished work meant for the world, and public work still evolving in the open. Conflating them creates risk — restricted material can be exposed, or private drafts burdened with public-facing infrastructure they don't need. The workflow addresses this by organizing all research content into four stores, each matching a distinct access and dissemination requirement:
 
 - **research-workbench** — the active drafting workspace. In-progress manuscripts, notes, and analyses, written in Markdown so an AI chatbot can read and edit them directly (or so answers can be pasted in/out cleanly). Private by default, but shared with named collaborators.
 - **public-portfolio** — finished, publicly shareable work: our own published papers, and other researchers' work that they have chosen to make available as Markdown. Meant to be as widely and durably accessible as possible — citable, forkable, and fast to load. Once a paper lands here, it is frozen: a fixed version of record, matching whatever venue or DOI it cites.
-- **literature-vault** — third-party published material converted to Markdown purely so it can be used as AI-readable reference context while drafting (e.g. "write this section consistent with the findings in these five papers"). Not for redistribution: the conversion is for internal use only, and the underlying material typically cannot be shared publicly for copyright reasons.
+- **literature-vault** — third-party published material converted to Markdown so it can serve as AI-readable reference context while drafting (e.g. "write this section consistent with the findings in these five papers") — and not only prose: published **datasets** are acquired here too, their data tables converted to Markdown (or a small in-repo data file) so the AI can fit or check the work against real numbers rather than treat the source as background alone. Not for redistribution: the conversion is for internal use only, and the underlying material typically cannot be shared publicly for copyright reasons.
 - **living-papers** — public work that stays open to revision and outside contribution, in the manner of an open-source project, without ever being declared a frozen version of record tied to a journal or DOI. Suited to fast-moving fields where a document is more useful kept current than sealed at a publication date. Public, with pull requests and issues open to outside contributors, not just named collaborators.
 
 The four stores reflect genuinely different requirements, not an arbitrary taxonomy: research-workbench needs fine-grained collaborator access and strong version control for iterative editing; public-portfolio needs to be fast and durable with no access control, but also fixed, since a citation should resolve to stable content; literature-vault needs to stay restricted to the researcher and immediate collaborators indefinitely, with no dissemination path; living-papers needs public-portfolio's open reach without public-portfolio's finality, and research-workbench's openness to pull-request revision without research-workbench's restricted access. That combination — public *and* still evolving — is what makes it a distinct store rather than a variant of the other two. Keeping the four separate means each carries only the infrastructure it needs.
@@ -91,13 +91,13 @@ flowchart TB
     style published fill:#f7fbf4,stroke:#548235,stroke-width:1px
 ```
 
-**Figure 2.** The four-store architecture, grouped by access. Within the private repositories, the researcher and AI draft in **research-workbench** — reviewed by co-authors through pull requests — while pulling reference context from **literature-vault**. A manuscript is published either to **public-portfolio**, frozen as a version of record, or to **living-papers**, which stays open to outside contributors through ordinary pull requests. Figures in both public stores are mirrored to an object-storage bucket behind a CDN (e.g. `figures.tgtenev.com`) for fast delivery to public readers.
+**Figure 2.** The four-store architecture, grouped by access. Within the private repositories, the researcher and AI draft in **research-workbench** — reviewed by co-authors through pull requests — while pulling reference context from **literature-vault**. A manuscript is published either to **public-portfolio**, frozen as a version of record, or to **living-papers**, which stays open to outside contributors through ordinary pull requests. Figures in both public stores are optionally served from an object-storage bucket behind a CDN (e.g. `figures.tgtenev.com`) — referenced by URL rather than committed — for fast delivery to public readers.
 
-Each store is a GitHub repository holding the Markdown text (private for research-workbench and literature-vault, public for public-portfolio and living-papers). Figures for the two public stores are additionally mirrored to a public object-storage bucket served over a CDN for fast image loading; figures for the two private stores live alongside their Markdown in-repo.
+Each store is a GitHub repository holding the Markdown text (private for research-workbench and literature-vault, public for public-portfolio and living-papers). Figures for the two private stores live alongside their Markdown in-repo. For the two public stores, figures are optionally (§3) served from a public object-storage bucket behind a CDN — referenced from the Markdown by URL rather than committed to the repo — which speeds up loading image-heavy public papers for a broad audience; where that setup is not worth it, a small figure set can still live in-repo, as this paper's own single figure does.
 
 **Worked example: this paper itself.** This document was drafted in the `research-workbench` GitHub repository at `github.com/tgtenev/research-workbench`, path `ai-research-workflow/ai-research-workflow.md`, branch `main` — private, consistent with its own taxonomy — and, being itself a document about an evolving field, was subsequently published to the public `living-papers` repository rather than frozen into public-portfolio. That move illustrates both the raw/rendered distinction from §3 and the private/public distinction above:
 
-- **Human, rendered view (works at either stage)** — `https://github.com/tgtenev/research-workbench/blob/main/ai-research-workflow/ai-research-workflow.md` while drafting, then `https://github.com/tgtenev/living-papers/blob/main/ai-research-workflow/ai-research-workflow.md` once published. GitHub's blob viewer renders headings, tables, LaTeX math, and the Mermaid diagram (Figure 2) for anyone with repo access, with no extra tooling.
+- **Human, rendered view (works at either stage)** — `https://github.com/tgtenev/research-workbench/blob/main/ai-research-workflow/ai-research-workflow.md` while drafting, then `https://github.com/tgtenev/living-papers/blob/main/ai-research-workflow/ai-research-workflow.md` once published. GitHub's blob viewer renders headings, tables, LaTeX math, and the Mermaid diagram (Figure 2) for anyone with repo access, with no extra tooling — though GitHub's math renderer is stricter than a local preview, and authoring math so it renders there takes some care (§5.8).
 - **AI, raw-text view of a private draft (needs authentication)** — while the document lived only in research-workbench, the plain-text URL `https://raw.githubusercontent.com/tgtenev/research-workbench/main/ai-research-workflow/ai-research-workflow.md` returned a 404 to an anonymous request, because research-workbench is private. Fetching it required a credential scoped to the repo, e.g. `curl -H "Authorization: token $GITHUB_TOKEN" https://raw.githubusercontent.com/tgtenev/research-workbench/main/ai-research-workflow/ai-research-workflow.md`, or `gh api repos/tgtenev/research-workbench/contents/ai-research-workflow/ai-research-workflow.md --jq '.content' | base64 -d`. This applies generally to research-workbench and literature-vault: an AI chatbot needs an authenticated request, not just the bare URL.
 - **AI, raw-text view once published (no auth needed)** — once the paper moved to living-papers (`github.com/tgtenev/living-papers`), the equivalent raw URL, `https://raw.githubusercontent.com/tgtenev/living-papers/main/ai-research-workflow/ai-research-workflow.md`, became fetchable by anyone, with no credentials — and, unlike a public-portfolio URL, keeps changing as outside contributors and the author continue to revise it. This is the version to use as the "paste this URL" example in day-to-day use; the authenticated case applies only while a document remains a private draft.
 
@@ -116,7 +116,7 @@ Each store is a GitHub repository holding the Markdown text (private for researc
 
 Conversion tooling (Docling, Pandoc) is not listed here: it is needed only once literature-vault or public-portfolio conversion pipelines are in use, not as part of core setup. See §5 for the specific tools and when to install them.
 
-**Why Markdown serves both machine and human consumption.** A `.md` file is plain text, so an AI chatbot reads or edits it directly with no parsing step, and it diffs cleanly in git. The same file also renders as formatted prose — headings, tables, LaTeX math, images — via VS Code's Markdown preview, GitHub's web UI, or any static site generator. No second copy exists for the human-readable view; the raw text and the rendered view are the same file, which keeps the AI's edits and the human's reading experience in sync.
+**Why Markdown serves both machine and human consumption.** A `.md` file is plain text, so an AI chatbot reads or edits it directly with no parsing step, and it diffs cleanly in git. The same file also renders as formatted prose — headings, tables, LaTeX math, images — via VS Code's Markdown preview, GitHub's web UI, or any static site generator, though these renderers do not agree on every edge case and math in particular needs authoring for GitHub's stricter engine (§5.8). No second copy exists for the human-readable view; the raw text and the rendered view are the same file, which keeps the AI's edits and the human's reading experience in sync.
 
 ## 4. Setup Guide
 
@@ -135,15 +135,15 @@ Any credential generated in this section — the GitHub token used for authentic
 
 **Getting more detailed instructions from an AI chatbot.** The steps above are deliberately high-level: each one (creating a Cloudflare API token, configuring a custom domain, setting repo collaborator permissions) has provider-specific UI that changes over time and is better retrieved live from a chatbot than fixed in this document. Feed the chatbot this document as context and ask it to expand a specific step, rather than re-deriving the steps from scratch.
 
-As in the worked example in §2, this document's raw-text URL is:
+As in the worked example in §2, this document now lives in the public living-papers store, so its raw-text URL is fetchable with no credentials:
 
 ```
-https://raw.githubusercontent.com/tgtenev/research-workbench/main/ai-research-workflow/ai-research-workflow.md
+https://raw.githubusercontent.com/tgtenev/living-papers/main/ai-research-workflow/ai-research-workflow.md
 ```
 
 A prompt to a chatbot with URL-fetching ability (or with the file's contents pasted in directly):
 
-> Fetch `https://raw.githubusercontent.com/tgtenev/research-workbench/main/ai-research-workflow/ai-research-workflow.md` and use it as context. Walk me through step 5 of the Setup Guide (§4) in detail: creating a Cloudflare account, creating an R2 bucket for public-portfolio figures, and generating a scoped API token for uploads.
+> Fetch `https://raw.githubusercontent.com/tgtenev/living-papers/main/ai-research-workflow/ai-research-workflow.md` and use it as context. Walk me through step 5 of the Setup Guide (§4) in detail: creating a Cloudflare account, creating an R2 bucket for public-portfolio figures, and generating a scoped API token for uploads.
 
 Because the document is plain Markdown at a stable URL, the same pattern — fetch the raw URL, then ask for a specific section in depth — works for any step in §4, or any other section of the paper.
 
@@ -195,7 +195,25 @@ The scheme differs from word-processor margins in two respects. An anchor binds 
 
 Because issues are plain text, the AI collaborator participates directly: instructed to address one, it retrieves the thread via the `gh` CLI or the API, reads the snippets and remarks, edits in place, replies in the thread, commits with a reference to the issue, and closes it or defers to the reviewer. The exchange stays within the same version-controlled substrate as the manuscript and is preserved in the auditable record noted in §6.
 
-### 5.5 Converting Third-Party Work into literature-vault
+### 5.5 Multi-document research programs (advanced)
+
+The workflows above assume a single manuscript with its context manifest. A larger effort outgrows that shape. When one result is meant to anchor several downstream papers, it is safer to develop the whole set together in one research-workbench directory — a *research program* — than to publish the anchor and discover only later that a paper built on top of it forces the anchor to change.
+
+Call the anchor the **foundational paper**: the load-bearing result the others depend on. Publishing it early is a commitment that is expensive to walk back — a later dependent paper can expose a gap, a sign error, or an overreach in the foundation, and by then the foundation is a frozen version of record that others may already cite. Keeping the foundational paper in research-workbench while its dependents are still being drafted lets each dependent act as a stress test on it: the foundation is ready to publish only once the papers that will lean on it have been carried far enough to confirm they do not paint it into a corner. This is the adversarial discipline of §5.3 applied at the scale of a whole program rather than a single argument.
+
+In practice a program is a directory holding more than the manuscripts. Alongside the papers themselves sit:
+
+- **a shared background document** — the prerequisite theory the whole program draws on, written once instead of re-explained in each paper;
+- **a derivations document** — the step-by-step working behind results that the papers state but do not belabor;
+- **distilled digests of key references** — a program-weighted summary of a pivotal source, cheaper to feed the AI as context each session than the full original;
+- **a findings register** — a running hypothesis → outcome → delta record of what is settled, what is open, and what would close each gap;
+- **acquired datasets and the analysis code that runs on them** — see below.
+
+A single `context.md` manifest (§5.1) at the top of the program directory ties these together, so any session can be pointed at the whole program's state at once.
+
+**AI-written analysis code lives with the manuscript.** A research program is not only prose. Asked to test a claim quantitatively, the AI can write the analysis or validation script itself — code that fits a model to acquired data, checks a derivation numerically, or reduces a dataset — and that code has a natural home in the same program directory as the manuscript it supports, versioned in the same repository. The data it runs on (acquired into literature-vault, or held in a `data/` subfolder), the script, and the prose that cites the script's output are then committed and reviewed together, so a number in the paper is traceable to the exact code and inputs that produced it. Feeding those outputs back into the findings register, rather than only into the prose, keeps each numerical result attached to the question it was meant to answer.
+
+### 5.6 Converting Third-Party Work into literature-vault
 
 The input is almost always a PDF. The pipeline must extract body text into Markdown, extract figures as separate image files, and convert mathematical notation into LaTeX math (`$...$` / `$$...$$`), since math in a PDF is rendered glyphs, not text. Layout- and math-aware extraction is the hard part — columns, footnotes, and equations are easy to mangle — which rules out naive PDF-to-text conversion.
 
@@ -205,7 +223,9 @@ Situational alternatives: **Marker** or **MinerU** (comparable open-source tools
 
 Treat the pipeline as "Docling by default, Mathpix for math-heavy outliers," and always spot-check the converted Markdown against the source PDF — even the best tools mis-parse occasional formulas, tables, or footnotes.
 
-### 5.6 Converting Own Work into public-portfolio
+**Datasets, not only prose.** The same store and pipeline take published *data*, too. A results table or catalogue is converted into a Markdown table (or, when it is large, a small in-repo data file under a `data/` folder) so the analysis code of a program (§5.5) can run against the real numbers rather than merely cite them — the tables behind a quantitative fit are acquired exactly this way and read as data, not background.
+
+### 5.7 Converting Own Work into public-portfolio
 
 Here the manuscript's authored source is available, not just a rendered PDF, so conversion is more reliable and lossless. Two cases:
 - **LaTeX origin:** convert `.tex` to Markdown. Math is already LaTeX and maps directly to Markdown math spans; figures come from the existing `\includegraphics` paths.
@@ -217,9 +237,27 @@ Here the manuscript's authored source is available, not just a rendered PDF, so 
 
 Two caveats: complex math (aligned equations, piecewise functions, numbered systems) round-trips less reliably than simple formulas and warrants a manual or AI-assisted proofread pass; and numbered/cross-referenced equations need the [pandoc-crossref](https://github.com/lierdakil/pandoc-crossref) filter, since Pandoc doesn't number equations natively.
 
-If only a rendered PDF survives for an older piece of one's own work, apply the literature-vault pipeline (§5.5) instead — Docling, not Pandoc — even though the result is destined for public-portfolio.
+If only a rendered PDF survives for an older piece of one's own work, apply the literature-vault pipeline (§5.6) instead — Docling, not Pandoc — even though the result is destined for public-portfolio.
 
 **AI assistance.** An AI chatbot can write the conversion script itself, debug a specific file's bad output (paste the mis-parsed Markdown and the source excerpt), and perform the proofread pass above. A representative first prompt: "Write a Python script using Docling that converts every PDF in `./literature-vault/incoming/` to Markdown, extracts figures into `./literature-vault/figures/<paper-slug>/`, and converts math to LaTeX."
+
+### 5.8 Tuning the tool-chain to the tech stack
+
+The substrate is not friction-free. GitHub, the AI, and the local shell each have idiosyncrasies a smooth workflow has to tune around — not deep design points, but recurring papercuts that cost a session if rediscovered each time. Three are worth codifying.
+
+**Author math for GitHub's renderer, not just the local preview.** GitHub renders Markdown math with a KaTeX-based engine that is stricter than VS Code's built-in preview, so a file can look perfect locally and still render as raw LaTeX on github.com — and github.com, the published surface, is the authoritative target. The recurring fixes:
+
+- **Blocklisted macros.** GitHub's KaTeX refuses `\operatorname` (and `\def`, `\newcommand`, `\gdef`, `\let`, `\htmlClass`). Replace `\operatorname{diag}` with `\mathrm{diag}`, which renders identically.
+- **Literal braces.** GitHub's Markdown pass strips the backslash from `\{` and `\}` inside math — breaking `\left\{ … \right\}` and silently dropping set-notation braces. Use `\lbrace` / `\rbrace` instead.
+- **Displayed equations.** Wrap every block equation — even a one-liner — in `\begin{split} … \end{split}`, put any `\tag{}` on its own line after `\end{split}`, and leave a blank line before and after the `$$` delimiters; a bare tagged equation that is valid KaTeX in isolation can otherwise render as a garbled token stack.
+- **Oversized files.** A single file that is very large or very equation-dense makes GitHub silently stop rendering *all* of its math. Diagnose scale-versus-syntax by pushing a few of the failing equations in a tiny test file; if they render there but not in the big file, split the document into chapter-sized files.
+- **Inline math.** Plain `$…$` inline works on both surfaces at normal file sizes; GitHub also accepts a backtick-delimited `` $`…`$ `` form that survives its Markdown sanitizer, but the VS Code preview does not understand it, so reserve it for the specific expression that actually fails in bare form.
+
+The reliable move is to **sweep for these before publishing** — grep the file for the blocklisted macros and for `\{` / `\}` — rather than waiting for a reader to hit a broken render.
+
+**Mind the local shell's own quirks.** Friction is not only GitHub's. On Windows, for instance, the Bash tool collapses `\\` to `\` inside single-quoted arguments, which corrupts a regex full of escaped backslashes; run such a check through a dedicated search tool or a small script file rather than an inline one-liner. The general lesson is that a check meant to enforce one of the rules above can itself be mangled by the shell, so the enforcement belongs in a script, not an ad-hoc command.
+
+**Capture the fixes as reusable AI instructions, not tribal knowledge.** None of the above should have to be re-remembered. Because the AI collaborator can load project-local instruction files automatically, the durable form of every convention in this paper — the metadata block (§5.2), the context check (§5.1), the conversion pipeline (§5.5–5.7), and the rendering rules just listed — is a short skill or instruction file kept in the repository, applied by the AI on its own without the researcher re-prompting each time. That is what turns the workflow from a set of habits the human must police into conventions the AI enforces: the same logic that version-controls the substrate, extended to the practices that operate on it.
 
 ## 6. Discussion
 
