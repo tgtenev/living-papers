@@ -8,7 +8,7 @@
 | **Version** | v4 |
 | **Last updated** | 2026-07-17 |
 | **Branch** | `main` |
-| **Revision note** | Publication-prep pass against a second week of observed practice. §5.1 gains the committed scratch document as a middle context form; §5.5 gains digest figures/PDF export, the self-referential pointer to this paper's own review register, and program-wide maintenance sweeps (rename ripples, document retirement); Limitations now states plainly that the multi-author loop is designed but not yet exercised (solo + AI practice so far) and drops a dangling reference to a figure-naming convention no longer described. Fixed the §4 step ordering, a §5.8 cross-reference, and supplied the verified URL for reference [5]. |
+| **Revision note** | Publication-prep pass against a second week of observed practice. §5.1 gains the committed scratch document as a middle context form; §5.5 gains digest figures/PDF export, the self-referential pointer to this paper's own review register, and program-wide maintenance sweeps (rename ripples, document retirement); Limitations now states plainly that the multi-author loop is designed but not yet exercised (solo + AI practice so far) and drops a dangling reference to a figure-naming convention no longer described. Fixed the §4 step ordering, a §5.8 cross-reference, and supplied the verified URL for reference [5]. Noted in §5.5 that a worked program example is forthcoming, and added this paper's own `context.md` alongside it. |
 
 ---
 
@@ -212,6 +212,8 @@ In practice a program is a directory holding more than the manuscripts. Alongsid
 - **acquired datasets and the analysis code that runs on them** — see below.
 
 A single `context.md` manifest (§5.1) at the top of the program directory ties these together, so any session can be pointed at the whole program's state at once.
+
+A worked example of a full program — in the manner of §2's worked example for this single paper — will be added in a future revision, once the program it would draw on is itself ready to be shared publicly.
 
 A program also accretes maintenance work a single manuscript does not. A notation change in the foundational paper must ripple through every dependent, digest, and analysis script that uses the symbol, and documents that have served their purpose — a superseded review, an absorbed scratch analysis — are folded into their successors and retired rather than left to drift out of sync. Both are mechanical sweeps the AI executes across the whole directory once instructed, which is what makes the discipline sustainable.
 
