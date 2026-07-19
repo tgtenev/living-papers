@@ -5,10 +5,10 @@
 | | |
 |---|---|
 | **Store** | living-papers |
-| **Version** | v4 |
-| **Last updated** | 2026-07-17 |
+| **Version** | v5 |
+| **Last updated** | 2026-07-19 |
 | **Branch** | `main` |
-| **Revision note** | Publication-prep pass against a second week of observed practice. §5.1 gains the committed scratch document; §5.5 gains digest figures and PDF export, a pointer to this paper's own review register, program maintenance sweeps, and a note that a worked program example is forthcoming. Limitations now states that the multi-author loop is designed but not yet exercised. Removed §2's obsolete authenticated-fetch bullet, fixed §4 ordering and a §5.8 cross-reference, verified reference [5]'s URL, and added this paper's `context.md`. |
+| **Revision note** | Rewrote §5.4 (Review and Commenting): leads with CriticMarkup as the standardized in-text syntax for reviewer annotations, names the VS Code plugin (Review Markup Sidebar, `si-pa.review-markup-sidebar`) that writes it via highlight-and-comment, and keeps the GitHub permalink/issue scheme as the alternative for discussion anchored to a historical revision. |
 
 ---
 
@@ -186,15 +186,11 @@ The practical pattern follows: draft and edit with a mid-tier model at modest ef
 
 ### 5.4 Review and Commenting
 
-Co-authors and reviewers must be able to annotate the manuscript's current, committed state, not only a change under review — the equivalent of margin comments in a word processor. Pull-request review does not serve this: its threaded comments attach to a proposed change and persist only while the pull request is open. Commentary on checked-in content is instead anchored through permanent links and hosted as GitHub issues.
+Co-authors and reviewers need to annotate the manuscript's current, committed text in place — the equivalent of margin comments in a word processor — not only a pull request's threaded comments, which attach to a proposed change and disappear once the PR closes. Because the manuscript is plain Markdown, in-place commentary has a standardized syntax: [CriticMarkup](http://criticmarkup.com/) marks a `{==highlighted span==}` and attaches a `{>>remark<<}` to it, alongside parallel markup for suggested additions, deletions, and substitutions. Being ordinary text, these annotations diff, merge, and grep like any other edit, and live in the file itself rather than in a thread scoped to one PR.
 
-A reviewer selects the relevant lines in GitHub's file view and copies a *permalink* — a URL with the branch name replaced by the immutable commit hash, so it resolves to those exact lines as they stood at that revision. Pasted into a new or existing issue, the permalink expands into an inline snippet showing the referenced lines, path, and line numbers. The issue and its replies form a threaded discussion, and participants are notified by email and in-app, each notification reproducing the snippet and the remark.
+VS Code has a dedicated plugin for writing this markup rather than typing it by hand: [Review Markup Sidebar](https://codeberg.org/si-pa/review-markup-sidebar) (`si-pa.review-markup-sidebar` — the plugin installed in the environment used to draft this paper). It adds an activity-bar panel that scans the workspace and lists every CriticMarkup annotation grouped by file, each with one-click accept/reject and reply. To comment, a reviewer selects the passage in the editor and clicks **Comment** in the sidebar's toolbar: the selection is wrapped as a highlight, an empty comment is attached, and the cursor drops into the document to type it directly — no markup hand-written, no separate comment format to learn. Because the result is still plain text, the AI collaborator participates the same way it does elsewhere in this workflow: reading the CriticMarkup, revising the passage, and replying inline before the file is committed.
 
-Granularity is the reviewer's choice: an issue represents one matter requiring attention, which may cite several permalinks if it recurs across the manuscript, while unrelated matters are raised separately — the same discrete, individually addressable structure as conventional peer review. Closing the issue resolves the matter while keeping the discussion permanently linkable, unlike a resolved word-processor comment, which is typically hidden; the resolving commit references the issue number, so GitHub links discussion and edit bidirectionally and the provenance of each change is recoverable from history.
-
-The scheme differs from word-processor margins in two respects. An anchor binds to a specific revision rather than a floating range, so a later rewrite leaves the thread pointing at the historical text — continuity is preserved via the commit reference, not automatic re-anchoring. And discussion lives in the issue tracker rather than a visual margin, so a consolidated view of open commentary comes from filtering issues, not from the document itself.
-
-Because issues are plain text, the AI collaborator participates directly: instructed to address one, it retrieves the thread via the `gh` CLI or the API, reads the snippets and remarks, edits in place, replies in the thread, commits with a reference to the issue, and closes it or defers to the reviewer. The exchange stays within the same version-controlled substrate as the manuscript and is preserved in the auditable record noted in §6.
+An alternative, useful when discussion should live outside the manuscript or anchor permanently to one historical revision rather than travel with later rewrites, is a GitHub *permalink*: select lines in GitHub's file view, copy the URL with the branch name replaced by the immutable commit hash, and paste it into a new or existing issue, where it expands into an inline snippet. The issue threads replies and notifies participants; because the anchor binds to that revision rather than a floating range, it keeps pointing at the historical text even after later edits, with continuity preserved by the commit reference rather than automatic re-anchoring. Granularity is the reviewer's choice — one issue per matter, citing several permalinks if it recurs — and closing an issue resolves it while keeping the discussion permanently linkable, with a resolving commit that cites the issue number linking discussion and edit bidirectionally. Here too the AI collaborator can participate directly, retrieving a thread via the `gh` CLI, editing in place, and replying to or closing it.
 
 ### 5.5 Multi-document research programs (advanced)
 
