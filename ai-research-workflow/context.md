@@ -5,10 +5,10 @@
 | | |
 |---|---|
 | **Store** | living-papers |
-| **Version** | v1 |
-| **Last updated** | 2026-07-17 |
+| **Version** | v2 |
+| **Last updated** | 2026-10-18 |
 | **Branch** | `main` |
-| **Revision note** | v1: opened the manifest — durable context for [ai-research-workflow.md](ai-research-workflow.md), per its own §5.1. Lists the review register, the AI instruction files that codify the paper's conventions, and example literature-vault entries evidencing the conversion and dataset practices. |
+| **Revision note** | v2: a working-conventions section records that brainstorming and options analyses stay out of the paper's body. v1 opened the manifest, with the review register, the AI instruction files and the example literature-vault entries. |
 
 ---
 
@@ -35,6 +35,10 @@ Illustrative instances of the practices the paper claims, cited in the register'
 - `literature-vault/famaey2012-mond-phenomenology.md` — a large, math-heavy third-party review converted whole (§5.6): multi-hundred-entry reference list, LaTeX math authored to GitHub's renderer.
 - `literature-vault/li2018-rar-individual-galaxies.md` — a published **dataset** acquired as Markdown (§2, §5.6): a 175-galaxy results table converted so analysis code can fit against real numbers.
 - `literature-vault/burton1951-crystal-growth.md` — a scanned-era paper with all 29 figures extracted as local image files (§5.6's figure-extraction requirement).
+
+## Working conventions
+
+- **Brainstorming stays out of the paper (author-directed 2026-07-12).** Options analyses, comparisons with pros and cons, and other exploratory assessments are written to a scratch document, never into [ai-research-workflow.md](ai-research-workflow.md) itself. The paper holds settled text; a direction enters it only when the author has chosen it and asks for it to be drafted. The rule was set after a storage-architecture comparison had been written straight into the paper's body.
 
 ## External references
 
